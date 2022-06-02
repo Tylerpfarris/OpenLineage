@@ -177,3 +177,5 @@ if [[ $WAITFORIT_CLI != "" ]]; then
 else
     exit $WAITFORIT_RESULT
 fi
+
+# Copyright 2018-2022 contributors to the OpenLineage project

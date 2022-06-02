@@ -18,3 +18,5 @@ mysql --user="${MYSQL_USER}" --password="${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" 
       driver_id           INTEGER
     );
 EOSQL
+
+# Copyright 2018-2022 contributors to the OpenLineage project

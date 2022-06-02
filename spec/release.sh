@@ -67,3 +67,5 @@ git-website add -A .last_spec_commit_id
 git-website add -A spec/
 git --git-dir "$WEBSITE_DIR/.git" --work-tree "$WEBSITE_DIR" commit -m "openlineage specification update"
 git-website push
+
+# Copyright 2018-2022 contributors to the OpenLineage project

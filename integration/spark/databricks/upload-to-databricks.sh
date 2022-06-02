@@ -20,3 +20,5 @@ dbfs cp --overwrite ./databricks/open-lineage-init-script.sh           dbfs:/dat
 
 echo "Listing DBFS directory"
 dbfs ls dbfs:/databricks/openlineage
+
+# Copyright 2018-2022 contributors to the OpenLineage project

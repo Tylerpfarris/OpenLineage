@@ -34,3 +34,4 @@ maturin build --out target/wheels
 pip install openlineage-sql --no-index --find-links target/wheels --force-reinstall
 python -c "import openlineage_sql"
 echo "all good"
+# Copyright 2018-2022 contributors to the OpenLineage project

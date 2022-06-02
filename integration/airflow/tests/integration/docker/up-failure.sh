@@ -53,3 +53,5 @@ docker-compose -f failures/docker-compose.yml down
 docker-compose -f failures/docker-compose.yml up --build --abort-on-container-exit airflow_init postgres
 OPENLINEAGE_URL="http://network-partition:5000/" docker-compose -f failures/docker-compose.yml up --build --exit-code-from integration --scale airflow_init=0
 docker-compose -f failures/docker-compose.yml down
+
+# Copyright 2018-2022 contributors to the OpenLineage project

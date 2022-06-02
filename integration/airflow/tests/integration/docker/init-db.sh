@@ -31,3 +31,5 @@ psql -v ON_ERROR_STOP=1 --username "${FOOD_DELIVERY_USER}" > /dev/null <<-EOSQL
       driver_id           INTEGER
     );
 EOSQL
+
+# Copyright 2018-2022 contributors to the OpenLineage project

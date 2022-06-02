@@ -15,3 +15,5 @@ cat << 'EOF' > /databricks/driver/conf/openlineage-spark-driver-defaults.conf
 }
 EOF
 echo "END: Modify Spark config settings"
+
+# Copyright 2018-2022 contributors to the OpenLineage project
