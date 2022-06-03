@@ -3,6 +3,8 @@ import threading
 import uuid
 from queue import Queue, Empty
 
+import atexit
+
 import attr
 
 from typing import TYPE_CHECKING, Optional, Callable
@@ -31,6 +33,7 @@ class ActiveRunManager:
     we're only running on worker - in separate process that is always spawned (or forked) on
     execution, just like old PHP runtime model.
     """
+
     def __init__(self):
         self.run_data = {}
 
@@ -84,7 +87,6 @@ extractor_manager = ExtractorManager()
 adapter = OpenLineageAdapter()
 runner = TaskRunner()
 
-import atexit
 atexit.register(runner.terminate)
 
 
@@ -95,7 +97,8 @@ def execute_in_thread(target: Callable, kwargs=None):
 @hookimpl
 def on_task_instance_running(previous_state, task_instance: "TaskInstance", session: "Session"):
     if not hasattr(task_instance, 'task'):
-        log.warning(f"No task set for TI object task_id: {task_instance.task_id} - dag_id: {task_instance.dag_id} - run_id {task_instance.run_id}")  # noqa
+        log.warning(
+            f"No task set for TI object task_id: {task_instance.task_id} - dag_id: {task_instance.dag_id} - run_id {task_instance.run_id}")  # noqa
         return
 
     dagrun = task_instance.dag_run
@@ -125,6 +128,7 @@ def on_task_instance_running(previous_state, task_instance: "TaskInstance", sess
                 **get_custom_facets(task_instance, dagrun.external_trigger)
             }
         )
+
     execute_in_thread(on_running)
 
 
@@ -145,6 +149,7 @@ def on_task_instance_success(previous_state, task_instance: "TaskInstance", sess
             end_time=DagUtils.to_iso_8601(task_instance.end_date),
             task=task_metadata
         )
+
     execute_in_thread(on_success)
 
 
@@ -166,4 +171,5 @@ def on_task_instance_failed(previous_state, task_instance: "TaskInstance", sessi
             end_time=DagUtils.to_iso_8601(task_instance.end_date),
             task=task_metadata
         )
+
     execute_in_thread(on_failure)
