@@ -1,6 +1,8 @@
 import logging
 import threading
 import uuid
+from queue import Queue, Empty
+
 import attr
 
 from typing import TYPE_CHECKING, Optional, Callable
@@ -43,25 +45,51 @@ class ActiveRunManager:
         return ti.dag_id + ti.task_id + ti.run_id
 
 
-run_data_holder = ActiveRunManager()
-extractor_manager = ExtractorManager()
-adapter = OpenLineageAdapter()
 log = logging.getLogger('airflow')
 
 
+class TaskRunner:
+
+    def __init__(self):
+        self.queue = Queue(maxsize=0)
+        self.thread = threading.Thread(
+            target=self.run,
+            daemon=True
+        )
+        self.running = True
+        self.thread.start()
+        log.info("Started OpenLineage event listener thread")
+
+    def push(self, item: Callable):
+        self.queue.put(item, False)
+
+    def run(self):
+        while self.running:
+            try:
+                item: Callable = self.queue.get(True, 5)
+                item()
+            except Empty:
+                log.debug("Nothing in the queue")
+
+    def terminate(self):
+        log.info("Tearing down OpenLineage thread - waiting for active tasks")
+        self.running = False
+        self.queue.join()
+        self.thread.join(timeout=2)
+        log.info("OpenLineage thread torn down")
+
+
+run_data_holder = ActiveRunManager()
+extractor_manager = ExtractorManager()
+adapter = OpenLineageAdapter()
+runner = TaskRunner()
+
+import atexit
+atexit.register(runner.terminate)
+
+
 def execute_in_thread(target: Callable, kwargs=None):
-    if kwargs is None:
-        kwargs = {}
-    thread = threading.Thread(
-        target=target,
-        kwargs=kwargs,
-        daemon=True
-    )
-    thread.start()
-    # Join, but ignore checking if thread stopped. If it did, then we shoudn't do anything.
-    # This basically gives this thread 5 seconds to complete work, then it can be killed,
-    # as daemon=True. We don't want to deadlock Airflow if our code hangs.
-    thread.join(timeout=5)
+    runner.push(target)
 
 
 @hookimpl
