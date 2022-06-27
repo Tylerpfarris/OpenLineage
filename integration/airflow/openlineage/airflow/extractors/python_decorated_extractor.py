@@ -26,9 +26,7 @@ if not _DAG_NAMESPACE:
 class PythonDecoratedExtractor(BaseExtractor):
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
-        return [
-            "_PythonDecoratedOperator",
-        ]
+        return []
 
     def extract(self) -> Optional[TaskMetadata]:
 
